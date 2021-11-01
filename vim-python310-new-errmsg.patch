@@ -1,0 +1,13 @@
+diff --git a/src/testdir/test_python3.vim b/src/testdir/test_python3.vim
+index 66d5db5..a7b3570 100644
+--- a/src/testdir/test_python3.vim
++++ b/src/testdir/test_python3.vim
+@@ -3094,7 +3094,7 @@ func Test_python3_errors()
+     <<< Finished
+     > VimForeachRTP
+     vim.foreach_rtp(None):(<class 'TypeError'>, TypeError("'NoneType' object is not callable",))
+-    vim.foreach_rtp(NoArgsCall()):(<class 'TypeError'>, TypeError('__call__() takes exactly 1 positional argument (2 given)',))
++    vim.foreach_rtp(NoArgsCall()):(<class 'TypeError'>, TypeError('__call__() takes 1 positional argument but 2 were given',))
+     vim.foreach_rtp(FailingCall()):(<class 'NotImplementedError'>, NotImplementedError('call',))
+     vim.foreach_rtp(int, 2):(<class 'TypeError'>, TypeError('foreach_rtp() takes exactly one argument (2 given)',))
+     > import
