@@ -370,7 +370,7 @@ perl -pi -e "s/vimrc/virc/"  os_unix.h
 %endif
   --disable-pythoninterp --disable-perlinterp --disable-tclinterp \
   --with-tlib=ncurses --enable-gui=no --disable-gpm --exec-prefix=/ \
-  --with-compiledby="<rpm-devel@cajsyasdev.com>" \
+  --with-compiledby="<rpm-devel@casjaysdev.com>" \
   --with-modified-by="<rpm-devel@casjaysdev.com>" \
   --enable-fips-warning \
   --enable-fail-if-missing \
@@ -439,10 +439,10 @@ make clean
  --disable-tclinterp \
  --with-x=no \
  --enable-gui=no --exec-prefix=%{_prefix} --enable-multibyte \
- --enable-cscope --with-modified-by="<bugzilla@redhat.com>" \
+ --enable-cscope --with-modified-by="<rpm-devel@casjaysdev.com>" \
  --with-tlib=ncurses \
  --enable-fips-warning \
- --with-compiledby="<bugzilla@redhat.com>" \
+ --with-compiledby="<rpm-devel@casjaysdev.com>" \
 %if "%{withnetbeans}" == "1"
   --enable-netbeans \
 %else
@@ -899,6 +899,9 @@ touch %{buildroot}/%{_datadir}/%{name}/vimfiles/doc/tags
 %endif
 
 %changelog
+* Thu Nov 04 2021 CasjaysDev <rpm-devel@casjaysdev.com> 2:8.2.3512-2
+- Updated to build for CentOS 7
+
 * Fri Oct 15 2021 Zdenek Dohnal <zdohnal@redhat.com> - 2:8.2.3512-1
 - patchlevel 3512
 
