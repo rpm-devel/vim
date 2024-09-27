@@ -20,17 +20,6 @@ if !isdirectory($HOME . '/.config/vim')
     call mkdir($HOME . '/.config/vim')
 endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Paths
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set runtimepath+=~/.config/vim/
-set undodir=~/.config/vim/.undo//
-set backupdir=~/.config/vim/.backup//
-set directory=~/.config/vim/.swp//
-set viminfo+=n~/.config/vim/.info/viminfo
-set rtp+=~/.local/share/vim/bundle
-set rtp+=~/.local/share/vim/bundle/Vundle.vim
-set rtp+=~/.local/share/vim/bundle/powerline/powerline/bindings/vim
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Python version
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if (has('python3') || has('pythonx'))
@@ -225,6 +214,17 @@ set cryptmethod=blowfish2
 set eol
 au BufWritePre * let &bex = '-' . strftime("%Y%m%d-%H%M%S") . '.vimbackup'
 let g:session_autoload = 'no'
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => files and folders
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set runtimepath+=~/.config/vim/
+set undodir=~/.config/vim/.undo//
+set backupdir=~/.config/vim/.backup//
+set directory=~/.config/vim/.swp//
+set viminfo+=n~/.config/vim/.info/viminfo
+set rtp+=~/.local/share/vim/bundle
+set rtp+=~/.local/share/vim/bundle/Vundle.vim
+set rtp+=~/.local/share/vim/bundle/powerline/powerline/bindings/vim
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
