@@ -8,7 +8,7 @@
 %bcond_with libsodium_crypt
 %endif
 
-%define patchlevel 1429
+%define patchlevel 2148
 
 %if %{?WITH_SELINUX:0}%{!?WITH_SELINUX:1}
 %define WITH_SELINUX 1
@@ -29,13 +29,8 @@
 %define withvimspell 0
 %define withhunspell 0
 %define withlua 1
-%if 0%{?flatpak}
-%define withperl 0
-%define withruby 0
-%else
 %define withperl 1
 %define withruby 1
-%endif
 
 # VIm upstream wants to build with FORTIFY_SOURCE=1,
 # because higher levels causes crashes of valid code constructs
@@ -43,8 +38,8 @@
 # https://github.com/vim/vim/pull/3507
 %define _fortify_level 1
 
-%define baseversion 9.0
-%define vimdir vim90
+%define baseversion 9.1
+%define vimdir vim91
 
 Summary: The VIM editor
 URL:     http://www.vim.org/
@@ -53,7 +48,7 @@ Version: %{baseversion}.%{patchlevel}
 Release: 1%{?dist}
 Epoch: 2
 License: Vim and MIT
-Source0: ftp://ftp.vim.org/pub/vim/unix/vim-%{baseversion}-%{patchlevel}.tar.bz2
+Source0: https://github.com/vim/vim/archive/v%{baseversion}.%{patchlevel}/vim-%{baseversion}.%{patchlevel}.tar.gz
 Source1: virc
 Source2: vimrc
 Source3: gvim16.png
@@ -84,7 +79,7 @@ BuildRequires: hunspell-devel
 Patch3000: vim-7.3-manpage-typo-668894-675480.patch
 Patch3001: vim-manpagefixes-948566.patch
 Patch3002: vim-7.4-globalsyntax.patch
-# migrate shebangs in script to /usr/bin/python3 and use python2 when necessary
+# migrate shebangs in script to /usr/bin/python3
 Patch3003: vim-python3-tests.patch
 # fips warning (Fedora downstream patch)
 Patch3004: vim-crypto-warning.patch
@@ -106,10 +101,12 @@ BuildRequires: gcc
 # for translations
 BuildRequires: gettext
 
-# glibc in F35 bootstraped several conversion formats from
-# iconv into a separate package. Vim needs those additional
-# formats during compilation.
+# glibc in F35+ split several iconv conversion formats into a separate package.
+# Vim needs those additional formats during compilation.
+# Only available on Fedora 35+ and EL9+.
+%if 0%{?fedora} >= 35 || 0%{?rhel} >= 9
 BuildRequires: glibc-gconv-extra
+%endif
 
 # for mouse support in console
 BuildRequires: gpm-devel
@@ -176,6 +173,7 @@ Requires: python3-neovim
 # https://github.com/vim/vim/commit/2286304cdbba53ceb52b3ba2ba4a521b0a2f8d0f
 Provides: vim-toml = %{epoch}:%{version}-%{release}
 Obsoletes: vim-toml < 0^1.717bd87-4
+Obsoletes: vim-common < %{epoch}:%{version}-%{release}
 
 %description common
 VIM (VIsual editor iMproved) is an updated and improved version of the
@@ -191,6 +189,7 @@ to install the vim-common package.
 %package spell
 Summary: The dictionaries for spell checking. This package is optional
 Requires: vim-common = %{epoch}:%{version}-%{release}
+Obsoletes: vim-spell < %{epoch}:%{version}-%{release}
 
 %description spell
 This subpackage contains dictionaries for vim spell checking in
@@ -206,6 +205,7 @@ Provides: vi
 Provides: %{_bindir}/vi
 # shared files between common and minimal
 Requires: %{name}-data = %{epoch}:%{version}-%{release}
+Obsoletes: vim-minimal < %{epoch}:%{version}-%{release}
 
 %description minimal
 VIM (VIsual editor iMproved) is an updated and improved version of the
@@ -228,7 +228,7 @@ Provides: %{_bindir}/vim
 Requires: vim-common = %{epoch}:%{version}-%{release}
 # required for vimtutor (#395371)
 Requires: which
-# suggest python3, python2, lua, ruby and perl packages because of their
+# suggest python3, lua, ruby and perl packages because of their
 # embedded functionality in Vim/GVim
 %if "%{withlua}" == "1"
 Suggests: lua-libs
@@ -245,6 +245,7 @@ Suggests: python3-libs
 Suggests: ruby
 Suggests: ruby-libs
 %endif
+Obsoletes: vim-enhanced < %{epoch}:%{version}-%{release}
 
 %description enhanced
 VIM (VIsual editor iMproved) is an updated and improved version of the
@@ -261,7 +262,7 @@ need to install the vim-common package.
 
 %package filesystem
 Summary: VIM filesystem layout
-BuildArch: noarch
+Obsoletes: vim-filesystem < %{epoch}:%{version}-%{release}
 
 %Description filesystem
 This package provides some directories which are required by other
@@ -301,7 +302,7 @@ Requires: hicolor-icon-theme
 # from inodes (files, dirs etc.)
 Requires: libattr >= 2.4
 Requires: vim-common = %{epoch}:%{version}-%{release}
-# suggest python3, python2, lua, ruby and perl packages because of their
+# suggest python3, lua, ruby and perl packages because of their
 # embedded functionality in Vim/GVim
   %if "%{withlua}" == "1"
 Suggests: lua-libs
@@ -318,6 +319,7 @@ Suggests: python3-libs
 Suggests: ruby
 Suggests: ruby-libs
   %endif
+Obsoletes: vim-X11 < %{epoch}:%{version}-%{release}
 
 %description X11
 VIM (VIsual editor iMproved) is an updated and improved version of the
@@ -335,12 +337,12 @@ vim-common package.
 
 %package data
 Summary: Shared data for Vi and Vim
-BuildArch: noarch
 # moved files from filesystem, common and minimal to data
 # remove after F36 EOL+after release of CentOS Stream > 9
 Conflicts: %{name}-common < 2:8.2.3642-2
 Conflicts: %{name}-filesystem < 2:8.2.3642-2
 Conflicts: %{name}-minimal < 2:8.2.3642-2
+Obsoletes: vim-data < %{epoch}:%{version}-%{release}
 
 %description data
 The subpackage is used for shipping files and directories, which need to be
@@ -349,10 +351,10 @@ shared between vim-minimal and vim-common packages.
 %if %{with default_editor}
 %package default-editor
 Summary: Set vim as the default editor
-BuildArch: noarch
 Conflicts: system-default-editor
 Provides: system-default-editor
 Requires: vim-enhanced
+Obsoletes: vim-default-editor < %{epoch}:%{version}-%{release}
 
 %description default-editor
 This subpackage contains files needed to set Vim as the default editor.
@@ -450,6 +452,7 @@ mv -f os_unix.h.save os_unix.h
   --enable-fips-warning \
   --with-compiledby="<bugzilla@redhat.com>" --enable-cscope \
   --with-modified-by="<bugzilla@redhat.com>" \
+  --enable-terminal \
   %if "%{withnetbeans}" == "1"
   --enable-netbeans \
   %else
@@ -494,6 +497,8 @@ make clean
  --disable-tclinterp \
  --with-x=no \
  --enable-gui=no --exec-prefix=%{_prefix} --enable-multibyte \
+ --enable-terminal \
+ --enable-xim \
  --enable-cscope --with-modified-by="<bugzilla@redhat.com>" \
  --with-tlib=ncurses \
  --enable-fips-warning \
@@ -712,11 +717,9 @@ mkdir -p %{buildroot}%{_sysconfdir}
 install -p -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/virc
 install -p -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/vimrc
 
-# if Vim isn't built for Fedora, use redhat augroup
-%if 0%{?rhel} >= 7
+# use redhat augroup on RHEL/AlmaLinux
 sed -i -e "s/augroup fedora/augroup redhat/" %{buildroot}/%{_sysconfdir}/vimrc
 sed -i -e "s/augroup fedora/augroup redhat/" %{buildroot}/%{_sysconfdir}/virc
-%endif
 
 %if %{with default_editor}
 mkdir -p %{buildroot}/%{_sysconfdir}/profile.d
@@ -1004,6 +1007,10 @@ touch %{buildroot}/%{_datadir}/%{name}/vimfiles/doc/tags
 %endif
 
 %changelog
+* Fri Apr 24 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 9.1.2148-1
+- Update to 9.1.2148
+- Modernize spec for EL10
+
 * Mon Mar 27 2023 Zdenek Dohnal <zdohnal@redhat.com> - 2:9.0.1429-1
 - patchlevel 1429
 
